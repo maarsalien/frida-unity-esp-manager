@@ -68,7 +68,7 @@ async function main() {
     for (let i = 1; i < espManager.getEnemiesCount(); i++) {
       const enemy = espManager.enemies[i];
 
-      if (IsPlayerDead(enemy)) {
+      if (enemy.isNull() || IsPlayerDead(enemy)) {
         espManager.tryRemoveEnemy(enemy);
         continue;
       }
@@ -95,17 +95,23 @@ async function main() {
       if (espBox) {
         const boxWidth = 100;
         const boxHeight = 200;
-        const boxFrom = { x: canvasWidth - (canvasWidth - pos.x) - boxWidth / 2, y: canvasHeight - pos.y - boxHeight };
+        const boxFrom = {
+          x: canvasWidth - (canvasWidth - pos.x) - boxWidth / 2,
+          y: canvasHeight - pos.y - boxHeight,
+        };
         const boxTo = { x: boxFrom.x + boxWidth, y: boxFrom.y + boxHeight };
         canvas.drawRect(boxFrom.x, boxFrom.y, boxTo.x, boxTo.y, ESPaint.StrokePaint);
       }
 
       if (isEspLine) {
         const drawFrom = { x: canvasWidth / 2, y: 40 };
-        const drawTo = { x: canvasWidth - (canvasWidth - pos.x) + 5, y: canvasHeight - pos.y - 50.0 };
+        const drawTo = {
+          x: canvasWidth - (canvasWidth - pos.x) + 5,
+          y: canvasHeight - pos.y - 50.0,
+        };
+        canvas.drawLine(drawFrom.x, drawFrom.y, drawTo.x, drawTo.y, ESPaint.StrokePaint);
         canvas.drawCircle(drawFrom.x, drawFrom.y, 5, ESPaint.FilledPaint);
         canvas.drawCircle(drawTo.x, drawTo.y, 5, ESPaint.FilledPaint);
-        canvas.drawLine(drawFrom.x, drawFrom.y, drawTo.x, drawTo.y, ESPaint.StrokePaint);
       }
     }
 
@@ -143,7 +149,7 @@ function get_camera() {
   return new NativeFunction(il2cpp.add(OFS.Camera.get_main), 'pointer', [])();
 }
 
-function GetHealth(player: NativePointer): number {
+function GetHealth(player: NativePointer) {
   return new NativeFunction(il2cpp.add(OFS.CEnemyBase.get_HealthPercentage), 'float', ['pointer'])(player);
 }
 
