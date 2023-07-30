@@ -2,43 +2,43 @@ export default class ESPManager {
   public static readonly MIN_AUTO_CLEAN_INTERVAL = 500;
   public static readonly DEFAULT_AUTO_CLEAN_INTERVAL = 1000;
   private _enemies: NativePointer[] = [];
-  private _autoCleanInterval: number = ESPManager.DEFAULT_AUTO_CLEAN_INTERVAL;
-  private _autoCleanIntervalId: NodeJS.Timer | undefined;
+  private autoCleanInterval: number;
+  private autoCleanIntervalId: NodeJS.Timer | undefined;
 
-  public constructor(autoClean = true, autoCleanInterval = ESPManager.DEFAULT_AUTO_CLEAN_INTERVAL) {
-    this._autoCleanInterval = autoCleanInterval;
-    if (autoClean) this.startAutoClean();
+  public constructor(isAutoClean = true, autoCleanInterval = ESPManager.DEFAULT_AUTO_CLEAN_INTERVAL) {
+    this.autoCleanInterval = autoCleanInterval;
+    if (isAutoClean) this.startAutoClean();
   }
 
   private set enemies(value: NativePointer[]) {
     this._enemies = value;
   }
 
-  public get enemies(): NativePointer[] {
+  public get enemies() {
     return this._enemies;
   }
 
-  public getAutoCleanInterval(): number {
-    return this._autoCleanInterval;
+  public getAutoCleanInterval() {
+    return this.autoCleanInterval;
   }
 
   public setAutoCleanInterval(intval: number): void {
-    this._autoCleanInterval = Math.max(intval, ESPManager.MIN_AUTO_CLEAN_INTERVAL);
+    this.autoCleanInterval = Math.max(intval, ESPManager.MIN_AUTO_CLEAN_INTERVAL);
   }
 
   public isAutoCleanEnabled(): boolean {
-    return this._autoCleanIntervalId !== undefined;
+    return this.autoCleanIntervalId !== undefined;
   }
 
   public startAutoClean(): void {
     if (this.isAutoCleanEnabled()) return;
-    this._autoCleanIntervalId = setInterval(() => this.cleanEnemies(), this._autoCleanInterval);
+    this.autoCleanIntervalId = setInterval(() => this.cleanEnemies(), this.autoCleanInterval);
   }
 
   public stopAutoClean(): void {
     if (!this.isAutoCleanEnabled()) return;
-    clearInterval(this._autoCleanIntervalId);
-    this._autoCleanIntervalId = undefined;
+    clearInterval(this.autoCleanIntervalId);
+    this.autoCleanIntervalId = undefined;
   }
 
   public isEnemyPresent(enemy: NativePointer): boolean {
