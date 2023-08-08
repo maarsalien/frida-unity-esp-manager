@@ -1,7 +1,7 @@
 import './ESPView.js';
 import ESPaint from './ESPaint.js';
 import ESPManager from './ESPManager.js';
-import OFS from './Offset.js';
+import Offset from './Offset.js';
 import { getActivity, getScreenResolution, ensureModulesInitialized, sleep } from './utils.js';
 import { log } from './Logger.js';
 
@@ -33,7 +33,7 @@ async function main() {
   const ESPView = Java.use('com.maars.ESPView');
 
   const MainActivity = await getActivity(APP_MAIN_ACTIVITY);
-  if (!MainActivity) throw new Error('MainActivity not found!');
+  if (!MainActivity) throw new Error(`Activity ${APP_MAIN_ACTIVITY} not found`);
 
   // const [SCREEN_WIDTH, SCREEN_HEIGHT] = getScreenResolution();
 
@@ -50,7 +50,7 @@ async function main() {
   /*
    * Hooks
    */
-  Interceptor.attach(il2cpp.add(OFS.CEnemyBase.Update), {
+  Interceptor.attach(il2cpp.add(Offset.CEnemyBase.Update), {
     onEnter(args) {
       espManager.tryAddEnemy(args[0]);
     },
@@ -121,12 +121,17 @@ async function main() {
 
 function Vector3(x = 0, y = 0, z = 0) {
   const vector = Memory.alloc(0xc);
-  new NativeFunction(il2cpp.add(OFS.Vector3.ctor), 'pointer', ['pointer', 'float', 'float', 'float'])(vector, x, y, z);
+  new NativeFunction(il2cpp.add(Offset.Vector3.ctor), 'pointer', ['pointer', 'float', 'float', 'float'])(
+    vector,
+    x,
+    y,
+    z,
+  );
   return vector;
 }
 
 function WorldToScreenPoint_Injected(camera: NativePointer, position: NativePointer, eye: number, out: NativePointer) {
-  new NativeFunction(il2cpp.add(OFS.Camera.WorldToScreenPoint_Injected), 'pointer', [
+  new NativeFunction(il2cpp.add(Offset.Camera.WorldToScreenPoint_Injected), 'pointer', [
     'pointer',
     'pointer',
     'int',
@@ -135,22 +140,22 @@ function WorldToScreenPoint_Injected(camera: NativePointer, position: NativePoin
 }
 
 function get_position_Injected(transform: NativePointer, out: NativePointer) {
-  new NativeFunction(il2cpp.add(OFS.Transform.get_position_Injected), 'pointer', ['pointer', 'pointer'])(
+  new NativeFunction(il2cpp.add(Offset.Transform.get_position_Injected), 'pointer', ['pointer', 'pointer'])(
     transform,
     out,
   );
 }
 
 function get_transform(player: NativePointer) {
-  return new NativeFunction(il2cpp.add(OFS.Component.get_transform), 'pointer', ['pointer'])(player);
+  return new NativeFunction(il2cpp.add(Offset.Component.get_transform), 'pointer', ['pointer'])(player);
 }
 
 function get_camera() {
-  return new NativeFunction(il2cpp.add(OFS.Camera.get_main), 'pointer', [])();
+  return new NativeFunction(il2cpp.add(Offset.Camera.get_main), 'pointer', [])();
 }
 
 function GetHealth(player: NativePointer) {
-  return new NativeFunction(il2cpp.add(OFS.CEnemyBase.get_HealthPercentage), 'float', ['pointer'])(player);
+  return new NativeFunction(il2cpp.add(Offset.CEnemyBase.get_HealthPercentage), 'float', ['pointer'])(player);
 }
 
 function IsPlayerDead(player: NativePointer): boolean {

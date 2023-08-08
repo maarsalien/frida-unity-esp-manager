@@ -1,11 +1,12 @@
 export default class ESPManager {
   public static readonly MIN_AUTO_CLEAN_INTERVAL = 500;
   public static readonly DEFAULT_AUTO_CLEAN_INTERVAL = 1000;
-  private _enemies: NativePointer[] = [];
+  private _enemies: NativePointer[];
   private autoCleanInterval: number;
   private autoCleanIntervalId: NodeJS.Timer | undefined;
 
   public constructor(isAutoClean = true, autoCleanInterval = ESPManager.DEFAULT_AUTO_CLEAN_INTERVAL) {
+    this._enemies = [];
     this.autoCleanInterval = autoCleanInterval;
     if (isAutoClean) this.startAutoClean();
   }
@@ -15,7 +16,7 @@ export default class ESPManager {
   }
 
   public get enemies() {
-    return this._enemies;
+    return [...this._enemies];
   }
 
   public getAutoCleanInterval() {
@@ -24,6 +25,10 @@ export default class ESPManager {
 
   public setAutoCleanInterval(intval: number): void {
     this.autoCleanInterval = Math.max(intval, ESPManager.MIN_AUTO_CLEAN_INTERVAL);
+    if (this.isAutoCleanEnabled()) {
+      this.stopAutoClean();
+      this.startAutoClean();
+    }
   }
 
   public isAutoCleanEnabled(): boolean {
@@ -42,32 +47,32 @@ export default class ESPManager {
   }
 
   public isEnemyPresent(enemy: NativePointer): boolean {
-    return this.enemies.find((e) => e.equals(enemy)) !== undefined;
+    return this._enemies.find((e) => e.equals(enemy)) !== undefined;
   }
 
   public tryAddEnemy(enemy: NativePointer): boolean {
     if (enemy.isNull() || this.isEnemyPresent(enemy)) return false;
-    this.enemies.push(enemy);
+    this._enemies.push(enemy);
     return true;
   }
 
   public tryRemoveEnemy(enemy: NativePointer): void {
-    this.enemies = this.enemies.filter((e) => !e.equals(enemy));
+    this._enemies = this._enemies.filter((e) => !e.equals(enemy));
   }
 
   public getEnemiesCount(): number {
-    return this.enemies.length;
+    return this._enemies.length;
   }
 
   public cleanEnemies(): void {
-    this.enemies = this.enemies.filter((e) => !e.isNull());
+    this._enemies = this._enemies.filter((e) => !e.isNull());
   }
 
   public reset(): void {
-    this.enemies = [];
+    this._enemies = [];
   }
 
   public at(index: number): NativePointer | undefined {
-    return this.enemies[index];
+    return this._enemies[index];
   }
 }
