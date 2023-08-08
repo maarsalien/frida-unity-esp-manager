@@ -1,4 +1,4 @@
-export default abstract class Offset {
+export default abstract class OFS {
   public static readonly CEnemyBase = {
     Update: 0x117f0c4,
     get_MaxHealth: 0x11806a4,
